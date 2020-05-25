@@ -1,43 +1,68 @@
 from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
 import time
 from secrets import *
 
-useremail = input('Enter your email address: ')
-usersubject = input('Enter the subject of your email: ')
-usertext = input('Enter the body of your email: ')
 
-browser = webdriver.Chrome()
-browser.get('https://gmail.com')
+def findbyclass(name, driver, keys='click'):
+    elem = driver.find_element_by_class_name(name)
 
-login = browser.find_element_by_class_name('whsOnd')
-login.send_keys(username)
+    if keys == 'click':
+        elem.click()
+    else:
+        elem.send_keys(keys)
 
-loginnext = browser.find_element_by_class_name('RveJvd')
-loginnext.click()
 
-time.sleep(2)
+def explicitwait(attribute, driver, keys='click'):
+    try:
+        elem = WebDriverWait(driver, 10).until(EC.presence_of_element_located(
+                (By.CLASS_NAME, attribute)))
+    except:
+        driver.quit()
 
-pwd = browser.find_element_by_class_name('whsOnd')
-pwd.send_keys(password)
+    if keys == 'click':
+        elem.click()
+    else:
+        elem.send_keys(keys)
 
-pwdnext = browser.find_element_by_class_name('RveJvd')
-pwdnext.click()
 
-time.sleep(4)
+def main():
+    useremail = input('Enter your email address: ')
+    usersubject = input('Enter the subject of your email: ')
+    usertext = input('Enter the body of your email: ')
 
-compose = browser.find_element_by_class_name('z0')
-compose.click()
+    browser = webdriver.Chrome()
+    browser.get('https://gmail.com')
 
-time.sleep(2)
+    login = browser.find_element_by_id('identifierId')
+    login.send_keys(username)
 
-recipient = browser.find_element_by_class_name('vO')
-recipient.send_keys(useremail)
+    findbyclass('RveJvd', browser)
 
-subject = browser.find_element_by_class_name('aoT')
-subject.send_keys(usersubject)
+    try:
+        pwd = WebDriverWait(browser, 10).until(
+            EC.element_to_be_clickable((By.CSS_SELECTOR, '#password .aCsJod .aXBtI .Xb9hP .whsOnd')))
+    except:
+        browser.quit()
 
-body = browser.find_element_by_class_name('Am')
-body.send_keys(usertext)
+    pwd.send_keys(password)
 
-sendit = browser.find_element_by_class_name('dC')
-sendit.click()
+    findbyclass('RveJvd', browser)
+
+    explicitwait('z0', browser)
+
+    explicitwait('vO', browser, useremail)
+
+    findbyclass('aoT', browser, usersubject)
+
+    findbyclass('Am', browser, usertext)
+
+    findbyclass('dC', browser)
+
+    time.sleep(5)
+
+
+main()
