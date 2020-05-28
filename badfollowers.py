@@ -20,8 +20,8 @@ def getlist(driver, totalnum, type):
         driver.execute_script("document.querySelector('div[class=\"isgrP\"]').scrollTop += 1000")
         rawlist = box.find_elements_by_tag_name('li')
 
-        if len(rawlist) > totalnum - 30:
-            time.sleep(1)
+        if len(rawlist) > totalnum - 15:
+            time.sleep(.5)  # short wait avoids StaleElementError on last element
             if len(rawlist) == totalnum:
                 break
 
