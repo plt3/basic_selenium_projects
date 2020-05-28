@@ -4,6 +4,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
+import time
 from secrets import *
 
 
@@ -15,9 +16,14 @@ def getlist(driver, totalnum, type):
 
     rawlist = []
 
-    while len(rawlist) != totalnum:
+    while True:
         driver.execute_script("document.querySelector('div[class=\"isgrP\"]').scrollTop += 1000")
         rawlist = box.find_elements_by_tag_name('li')
+
+        if len(rawlist) > totalnum - 30:
+            time.sleep(1)
+            if len(rawlist) == totalnum:
+                break
 
     print(f'Parsing {type} list...')
 
@@ -102,6 +108,8 @@ def main():
 
         for name, handle in badfollowerlist:
             print(f'{handle}: {name}', file=endfile)
+
+        print('\n\nTotal:', str(len(badfollowerlist)), file=endfile)  # maybe delete?
 
     print(f'Done. Look for a "{filename}" file in your current directory.')
 
