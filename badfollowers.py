@@ -11,7 +11,7 @@ def getlist(driver, totalnum, type):
     box = WebDriverWait(driver, 10).until(EC.element_to_be_clickable(
         (By.CSS_SELECTOR, 'ul[class="jSC57  _6xe7A"]')))
 
-    print(f'Scraping Instagram page for {type}...')
+    print(f'Scraping Instagram {type} page...')
 
     rawlist = []
 
@@ -21,20 +21,17 @@ def getlist(driver, totalnum, type):
 
     print(f'Parsing {type} list...')
 
-    if type == 'followers':
-        with open('followerserror.txt', 'w') as f:
-            print(rawlist, file=f)
-    else:
-        with open('followingerror.txt', 'w') as f:
-            print(rawlist, file=f)
-
     finallist = []
 
     for person in rawlist:
-        allinfo = person.text.split()
-        name = ' '.join(allinfo[1:-1])
-        handle = allinfo[0]
-        finallist.append((name, handle))
+        try:
+            allinfo = person.text.split()
+            name = ' '.join(allinfo[1:-1])
+            handle = allinfo[0]
+            finallist.append((name, handle))
+        except:
+            print('Problematic account detected. Moving on...')
+            continue
 
     print()
 
@@ -97,14 +94,16 @@ def main():
 
     badfollowerlist.sort(key=lambda x: x[1])
 
-    with open('badfollowers.txt', 'w') as endfile:
-        print(f'Peolpe who @{iguser} follows but who did not return the favor:\n\n', file=endfile)
-        print('Instagram handle  :  name\n', file=endfile)
+    filename = iguser + '_badfollowers.txt'
+
+    with open(filename, 'w') as endfile:
+        print(f'People who @{iguser} follows but who do not follow back:\n\n', file=endfile)
+        print('Instagram handle: name\n', file=endfile)
 
         for name, handle in badfollowerlist:
-            print(f'{handle}  :  {name}', file=endfile)
+            print(f'{handle}: {name}', file=endfile)
 
-    print('Done. Look for a "badfollowers.txt" file in your current directory.')
+    print(f'Done. Look for a "{filename}" file in your current directory.')
 
 
 main()
